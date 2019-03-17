@@ -1,0 +1,30 @@
+{
+  "name": "@shengael/shengapi",
+  "version": "1.0.1",
+  "description": "generate api template",
+  "main": "src/cli.js",
+  "shengapi": true,
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "bin": {
+    "shengapi": "src/cli.js"
+  },
+  "dependencies": {
+    "acorn": "^6.1.1",
+    "chalk": "^2.4.2",
+    "js-beautify": "^1.9.0",
+    "shelljs": "^0.8.3",
+    "yargs": "^13.2.2"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/express": "^4.16.1",
+    "@types/node": "^11.11.3",
+    "@types/shelljs": "^0.8.3",
+    "@types/yargs": "^12.0.9"
+  }
+}
