@@ -18,8 +18,7 @@ if(argv._[0] === 'init') {
 }
 if(argv._[0] === 'generate') {
     const gen = new Generate(argv, WORKING_DIR, SCRIPT_DIR);
-    // gen.generate();
-    gen.insertAttributes();
+    gen.generate();
 }
 
 

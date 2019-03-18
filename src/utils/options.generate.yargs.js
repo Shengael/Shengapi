@@ -23,7 +23,7 @@ function initOptionsYarg() {
         }).option('v', {
             alias: 'verbose',
             type: 'count',
-            nargs: 1,
+            nargs: 0,
             describe: 'verbose level'
         }).help('h')
             .alias('h', 'help')

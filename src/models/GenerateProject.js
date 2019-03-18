@@ -2,6 +2,7 @@
 const fs = require('fs');
 const acorn = require('acorn');
 const beautify = require('js-beautify').js;
+const logger = require('../utils').Logger;
 
 class GenerateProject {
 
@@ -14,11 +15,14 @@ class GenerateProject {
         this.modelsDir = `${this.srcDir}\\models`;
         this.controllersDir = `${this.srcDir}\\controllers`;
         this.routesDir = `${this.srcDir}\\routes`;
-        this.template = `${this.script_dir}\\templates\\generate`
+        this.template = `${this.script_dir}\\templates\\generate`;
+        this.dataSource = false;
     }
 
     generate() {
         if (!this.checkName()) return false;
+
+        if(!this.checkProject()) return false;
 
         let controller = fs.readFileSync(`${this.template}\\controller.js`).toString();
         controller = controller.replace(/\$model\$/g, `${this.name}`);
@@ -26,18 +30,17 @@ class GenerateProject {
         const controllerPath = `${this.controllersDir}\\${this.name}.controller.js`;
         fs.writeFileSync(controllerPath, controller);
 
-        const packageJson = fs.readFileSync(`${this.projectDir}\\package.json`);
-        const configs = JSON.parse(packageJson.toString());
 
         let model = fs.readFileSync(`${this.template}\\model.js`).toString();
 
-        if(configs.dependencies && configs.dependencies.mongoose){
+        if(this.dataSource === 'mongoose'){
             model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
-            model = model.replace(/\$models\$/g, `${this.name.toString().toLowerCase()}s`);
 
             if(this.attributes) {
-
+                model = this.insertAttributes(model);
             }
+
+            model = model.replace(/\$models\$/g, `${this.name.toString().toLowerCase()}s`);
         }
         model = model.replace(/\$modelName\$/g, `${this.name}`);
         const modelPath = `${this.modelsDir}\\${this.name}.js`;
@@ -84,7 +87,7 @@ class GenerateProject {
             }
 
             let lasString = this.editString(jsFile, `${comma}${newKey}`, position);
-            lasString = beautify(lasString, { indent_size: 4, space_in_empty_paren: true });
+            lasString = beautify(lasString, { indent_size: 4, space_in_empty_paren: true});
             fs.writeFileSync(file, lasString);
 
         }
@@ -119,9 +122,9 @@ class GenerateProject {
 
     }
 
-    insertAttributes() {
-        const model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
-        let bodyJs = acorn.parse(model).body;
+    insertAttributes(JSString) {
+        // const model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
+        let bodyJs = acorn.parse(JSString).body;
 
         const attributesArray = this.attributes.map(ele => {
             return `${ele.split(':')[0].toLowerCase().trim()}: ${ele.split(':')[1].trim().charAt(0).toUpperCase()}${ele.split(':')[1].trim().slice(1).toLowerCase()}`;
@@ -137,9 +140,62 @@ class GenerateProject {
 
         const position = bodyJs.declarations[0].init.arguments[0].start + 1;
 
-        const res = this.editString(model, attributesString, position);
-        console.log(res);
+        let res = this.editString(JSString, attributesString, position);
+        res = beautify(res, { indent_size: 4, space_in_empty_paren: true });
 
+        return res;
+
+    }
+
+
+    checkProject() {
+        if(!fs.existsSync(this.controllersDir)) {
+            logger.ERROR(`${this.controllersDir} doesn't exist`);
+            return false;
+        }
+
+        if(!fs.existsSync(this.modelsDir)) {
+            logger.ERROR(`${this.modelsDir} doesn't exist`);
+            return false;
+        }
+
+        if(!fs.existsSync(this.routesDir)) {
+            logger.ERROR(`${this.routesDir} doesn't exist`);
+            return false;
+        }
+
+        if(!fs.existsSync(`${this.routesDir}\\index.js`)) {
+            logger.ERROR(`${this.routesDir}\\index.js doesn't exist`);
+            return false;
+        }
+
+        if(!fs.existsSync(`${this.modelsDir}\\index.js`)) {
+            logger.ERROR(`${this.modelsDir}\\index.js doesn't exist`);
+            return false;
+        }
+
+        if(!fs.existsSync(`${this.controllersDir}\\index.js`)) {
+            logger.ERROR(`${this.controllersDir}\\index.js doesn't exist`);
+            return false;
+        }
+
+        const packageJson = fs.readFileSync(`${this.projectDir}\\package.json`);
+        const configs = JSON.parse(packageJson.toString());
+
+        if(configs.dependencies && configs.dependencies.mongoose) {
+            this.dataSource = 'mongoose';
+            logger.INFO('DataSource Mongoose detected');
+        }
+
+        if(configs.dependencies && configs.dependencies.sequelize) {
+            if(this.dataSource === 'mongoose') {
+                logger.WARN('DataSource Mongoose detected first, so Sequelize ignored');
+            } else {
+                this.dataSource = 'sequelize';
+            }
+        }
+
+        return true;
     }
 
     editString(principal, stringToInsert, position) {
