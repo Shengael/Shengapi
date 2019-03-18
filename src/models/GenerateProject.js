@@ -123,8 +123,22 @@ class GenerateProject {
         const model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
         let bodyJs = acorn.parse(model).body;
 
-        bodyJs = bodyJs.filter(statement => statement.type === 'VariableDeclaration');
-        console.log(bodyJs[2].declarations);
+        const attributesArray = this.attributes.map(ele => {
+            return `${ele.split(':')[0].toLowerCase().trim()}: ${ele.split(':')[1].trim().charAt(0).toUpperCase()}${ele.split(':')[1].trim().slice(1).toLowerCase()}`;
+        });
+
+        const attributesString = attributesArray.join(',');
+
+        bodyJs = bodyJs.filter(statement => statement.type === 'VariableDeclaration')
+            .filter(statement => statement.declarations[0].type === 'VariableDeclarator')
+            .filter(statement => statement.declarations[0].id.name === "$modelName$Schema")
+            .filter(statement => statement.declarations[0].init.type === 'NewExpression')
+            .find(statement =>  statement.declarations[0].init.callee.name === 'Schema');
+
+        const position = bodyJs.declarations[0].init.arguments[0].start + 1;
+
+        const res = this.editString(model, attributesString, position);
+        console.log(res);
 
     }
 
