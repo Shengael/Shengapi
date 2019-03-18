@@ -11,7 +11,8 @@
   "author": "",
   "license": "MIT",
   "bin": {
-    "shengapi": "src/cli.js"
+    "shengapi": "src/cli.js",
+    "shengapi-dev": "src/cli.js"
   },
   "dependencies": {
     "acorn": "^6.1.1",

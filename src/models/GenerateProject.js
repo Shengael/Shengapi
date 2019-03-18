@@ -7,6 +7,7 @@ class GenerateProject {
 
     constructor(argv, WORKING_DIR, SCRIPT_DIR) {
         this.name = argv.name;
+        this.attributes = argv.attributes;
         this.script_dir = SCRIPT_DIR;
         this.projectDir = WORKING_DIR;
         this.srcDir = `${this.projectDir}\\src`;
@@ -25,7 +26,19 @@ class GenerateProject {
         const controllerPath = `${this.controllersDir}\\${this.name}.controller.js`;
         fs.writeFileSync(controllerPath, controller);
 
+        const packageJson = fs.readFileSync(`${this.projectDir}\\package.json`);
+        const configs = JSON.parse(packageJson.toString());
+
         let model = fs.readFileSync(`${this.template}\\model.js`).toString();
+
+        if(configs.dependencies && configs.dependencies.mongoose){
+            model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
+            model = model.replace(/\$models\$/g, `${this.name.toString().toLowerCase()}s`);
+
+            if(this.attributes) {
+
+            }
+        }
         model = model.replace(/\$modelName\$/g, `${this.name}`);
         const modelPath = `${this.modelsDir}\\${this.name}.js`;
         fs.writeFileSync(modelPath, model);
@@ -106,6 +119,14 @@ class GenerateProject {
 
     }
 
+    insertAttributes() {
+        const model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
+        let bodyJs = acorn.parse(model).body;
+
+        bodyJs = bodyJs.filter(statement => statement.type === 'VariableDeclaration');
+        console.log(bodyJs[2].declarations);
+
+    }
 
     editString(principal, stringToInsert, position) {
         return [principal.slice(0, position), stringToInsert, principal.slice(position)].join('');
