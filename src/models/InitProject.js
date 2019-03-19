@@ -90,7 +90,9 @@ class InitProject {
             return false;
         }
 
-        fs.writeFileSync(`${this.modelsDir}\\index.js`, "'use strict';");
+        if(this.auto !== 'sequelize') {
+            fs.writeFileSync(`${this.modelsDir}\\index.js`, "'use strict';");
+        }
         fs.writeFileSync(`${this.controllersDir}\\index.js`, "'use strict';");
         fs.writeFileSync(`${this.routesDir}\\index.js`, "'use strict';");
         fs.writeFileSync(`${this.srcDir}\\index.js`, "'use strict';");
@@ -117,17 +119,20 @@ class InitProject {
     doAutomaticInstalls() {
         const installs = ['express', 'morgan', 'dotenv', 'body-parser'];
         const devInstalls = ['nodemon', '@types/express', '@types/morgan', "@types/dotenv", "@types/body-parser"];
+        const globals = [];
 
         if(this.auto === 'mongoose') {
             installs.push('mongoose');
             devInstalls.push('@types/mongoose');
         } else if(this.auto === 'sequelize') {
             installs.push('mysql2', 'sequelize');
-            devInstalls.push('@types/mysql2', '@types/sequelize');
+            devInstalls.push('@types/mysql', '@types/sequelize');
+            globals.push('sequelize-cli');
         }
 
         this.install(installs, '');
         this.install(devInstalls, '--save-dev');
+        this.install(globals, '-g');
 
         if(!this.editPackageJson('scripts', 'dev', 'nodemon src/index.js')){
             return false;
@@ -141,8 +146,20 @@ class InitProject {
         fs.writeFileSync(`${this.srcDir}\\index.js`, content);
         content = fs.readFileSync(`${initTemplatePath}\\controller.js`).toString();
         fs.writeFileSync(`${this.controllersDir}\\index.js`, content);
-        content = fs.readFileSync(`${initTemplatePath}\\models.js`).toString();
-        fs.writeFileSync(`${this.modelsDir}\\index.js`, content);
+
+        if(this.auto === 'sequelize') {
+            shell.cd(this.srcDir);
+            if (shell.exec(`sequelize init > nul 2>&1`).code !== 0) {
+                logger.ERROR(`sequelize init failed`);
+                shell.exit(1);
+            }
+        } else {
+            console.log('auto : ' + this.auto);
+            content = fs.readFileSync(`${initTemplatePath}\\models.js`).toString();
+            fs.writeFileSync(`${this.modelsDir}\\index.js`, content);
+        }
+
+        shell.cd(this.parentDir);
         content = fs.readFileSync(`${initTemplatePath}\\route.js`).toString();
         fs.writeFileSync(`${this.routesDir}\\index.js`, content);
     }

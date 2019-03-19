@@ -3,6 +3,7 @@ const fs = require('fs');
 const acorn = require('acorn');
 const beautify = require('js-beautify').js;
 const logger = require('../utils').Logger;
+const shell = require('shelljs');
 
 class GenerateProject {
 
@@ -33,6 +34,7 @@ class GenerateProject {
 
         let model = fs.readFileSync(`${this.template}\\model.js`).toString();
 
+
         if(this.dataSource === 'mongoose'){
             model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
 
@@ -42,9 +44,21 @@ class GenerateProject {
 
             model = model.replace(/\$models\$/g, `${this.name.toString().toLowerCase()}s`);
         }
-        model = model.replace(/\$modelName\$/g, `${this.name}`);
-        const modelPath = `${this.modelsDir}\\${this.name}.js`;
-        fs.writeFileSync(modelPath, model);
+
+        if(this.dataSource !== 'sequelize') {
+            model = model.replace(/\$modelName\$/g, `${this.name}`);
+            const modelPath = `${this.modelsDir}\\${this.name}.js`;
+            fs.writeFileSync(modelPath, model);
+        } else {
+            const attrs = this.attributes.join(',');
+            shell.cd(this.srcDir);
+            if (shell.exec(`sequelize model:create --name ${this.name} --attributes ${attrs}> nul 2>&1`).code !== 0) {
+                logger.ERROR(`sequelize model failed`);
+                logger.ERROR(`${attrs}`);
+                shell.exit(1);
+            }
+            shell.cd(this.projectDir);
+        }
 
         let route = fs.readFileSync(`${this.template}\\route.js`).toString();
         route = route.replace(/\$model\$/g, `${this.name.toString().toLowerCase()}s`);
@@ -62,11 +76,13 @@ class GenerateProject {
     }
 
     addFilesToImport() {
-        this.editImport(`${this.modelsDir}\\index.js`, `${this.name}: require('./${this.name}')`);
-        this.editImport(`${this.controllersDir}\\index.js`, `${this.name}Controller: require('./${this.name}.controller')`);
+        if(this.dataSource !== 'sequelize'){
+            GenerateProject.editImport(`${this.modelsDir}\\index.js`, `${this.name}: require('./${this.name}')`);
+        }
+        GenerateProject.editImport(`${this.controllersDir}\\index.js`, `${this.name}Controller: require('./${this.name}.controller')`);
     }
 
-    editImport(file, newKey) {
+    static editImport(file, newKey) {
 
         let jsFile = fs.readFileSync(file).toString();
         let bodyJs = acorn.parse(jsFile).body;
@@ -86,7 +102,7 @@ class GenerateProject {
                 position = bodyJs.expression.right.start + 1;
             }
 
-            let lasString = this.editString(jsFile, `${comma}${newKey}`, position);
+            let lasString = GenerateProject.editString(jsFile, `${comma}${newKey}`, position);
             lasString = beautify(lasString, { indent_size: 4, space_in_empty_paren: true});
             fs.writeFileSync(file, lasString);
 
@@ -115,7 +131,7 @@ class GenerateProject {
                 position = bodyJs.start + 1;
             }
 
-            let lasString = this.editString(jsFile, `app.use('/${this.name.toString().toLowerCase()}', require('./${this.name}.route'));`, position);
+            let lasString = GenerateProject.editString(jsFile, `app.use('/${this.name.toString().toLowerCase()}', require('./${this.name}.route'));`, position);
             lasString = beautify(lasString, { indent_size: 4, space_in_empty_paren: true });
             fs.writeFileSync(`${this.routesDir}\\index.js`, lasString);
         }
@@ -140,7 +156,7 @@ class GenerateProject {
 
         const position = bodyJs.declarations[0].init.arguments[0].start + 1;
 
-        let res = this.editString(JSString, attributesString, position);
+        let res = GenerateProject.editString(JSString, attributesString, position);
         res = beautify(res, { indent_size: 4, space_in_empty_paren: true });
 
         return res;
@@ -198,7 +214,7 @@ class GenerateProject {
         return true;
     }
 
-    editString(principal, stringToInsert, position) {
+    static editString(principal, stringToInsert, position) {
         return [principal.slice(0, position), stringToInsert, principal.slice(position)].join('');
 
     }
