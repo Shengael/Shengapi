@@ -1,87 +1,88 @@
-# Shengapi
+# Shengapi [![npm version](https://badge.fury.io/js/%40shengael%2Fshengapi.svg)](https://badge.fury.io/js/%40shengael%2Fshengapi)
 
-One Paragraph of project description goes here
+An API helper for node.js command Line Interface (CLI)
 
-## Getting Started
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#Usage)
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+## Installation
 
-### Prerequisites
+### Globally
+Install CLI globally with
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
+```bash
+$ npm install -g @shengael/shengapi
 ```
 
-And repeat
+Now you can run CLI using following command anywhere
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
+```bash
+$ shengapi
 ```
 
-### And coding style tests
+### Locally
+Install CLI locally to your `node_modules` folder with
 
-Explain what these tests test and why
+```bash
+$ npm install --save @shengapi/shengael
+```
+
+You should be able to run CLI with
+
+```bash
+$ node_modules/.bin/sehngapi
+```
+
+## Usage
+```
+Shengapi
+
+ Commands:
+   shengapi init      create new project API
+   shengapi generate  generate new element
+ 
+ Options:
+   --version   Show version number                                      [boolean]
+   -h, --help  Show help                                                [boolean]
+ 
+ Examples:
+   shengapi init -n Shengapi -a mongoose     create basic project with basic
+   -vv                                       installs
+   shengapi generate -n User                 create model, route and controller
+                                             for User
+
 
 ```
-Give an example
+
+###shengapi init
 ```
+Usage: shengapi init -n project Name [-i] [-d] [-a] [-v]
 
-## Deployment
+Options:
+  --version         Show version number                                [boolean]
+  -n, --name        Project name                             [string] [required]
+  -i, --install     Packages to install                                  [array]
+  -d, --devinstall  Dev Packages to install                              [array]
+  -a, --auto        create basic structure for api (-a mongoose || -a sequelize)
+                                                                        [string]
+  -v, --verbose     verbose level                                        [count]
+  -h, --help        Show help                                          [boolean]
 
-Add additional notes about how to deploy this on a live system
+```
+- If you use --auto, --install and --devinstall are ignored
+- -v show you WARN messages and -vv show you INFO messages
 
-## Built With
+ ###shengapi generate
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+```
+Usage: shengapi generate -n element Name [-a] [-v]
 
-## Contributing
+Options:
+  --version         Show version number                                [boolean]
+  -n, --name        Element name                             [string] [required]
+  -a, --attributes  model attributes (name:string age:number ...)        [array]
+  -v, --verbose     verbose level                                        [count]
+  -h, --help        Show help                                          [boolean]
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+```
