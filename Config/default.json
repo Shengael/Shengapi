@@ -1,0 +1,106 @@
+{
+    "global": {
+        "environment": {
+            "indexFileName": "index.js",
+            "useStrict": "use strict;",
+            "directories": {
+                "src": {
+                    "name": "src",
+                    "files": [],
+                    "templates": [],
+                    "directories": {
+                        "controllers": {
+                            "name": "controllers",
+                            "files": [],
+                            "templates": [
+                                {
+                                    "name": "controller.js",
+                                    "dest": "index.js"
+                                }
+                            ]
+                        },
+                        "routes": {
+                            "name": "routes",
+                            "files": [],
+                            "templates": [
+                                {
+                                    "name": "route.js",
+                                    "dest": "index.js"
+                                }
+                            ]
+                        },
+                        "models": {
+                            "name": "models",
+                            "files": []
+                        }
+                    }
+                }
+            }
+        },
+        "commands": {
+            "npm": "npm init --force > nul 2>&1",
+            "git": "git init"
+        },
+        "installs": {
+            "standard": [
+                "morgan",
+                "dotenv",
+                "express",
+                "body-parser"
+            ],
+            "devs": [
+                "nodemon",
+                "@types/express",
+                "@types/morgan",
+                "@types/dotenv",
+                "@types/body-parser"
+            ],
+            "global": []
+        }
+    },
+    "sequelize": {
+        "installs": {
+            "standard": [
+                "mysql2",
+                "sequelize"
+            ],
+            "devs": [
+                "@types/mysql",
+                "@types/sequelize"
+            ],
+            "global": [
+                "sequelize-cli"
+            ]
+        },
+        "environment": {
+            "directories": {
+                "src": {
+                    "name": "src",
+                    "directories": {
+                        "models": {
+                            "name": "models",
+                            "files": [],
+                            "templates": [
+                                {
+                                    "name": "model.js",
+                                    "dest": "index.js"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "mongoose": {
+        "installs": {
+            "standard": [
+                "mongoose"
+            ],
+            "devs": [
+                "@types/mongoose"
+            ],
+            "global": []
+        }
+    }
+}

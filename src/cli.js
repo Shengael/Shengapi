@@ -3,8 +3,8 @@
 //required packages
 
 const argv = require('./utils').initYarg;
-const Project = require('./models').Project;
-const Generate = require('./models').Generate;
+const Init = require('./commands').Init;
+const Generate = require('./commands').Generate;
 const logger = require('./utils').Logger;
 
 const WORKING_DIR = process.cwd();
@@ -13,10 +13,10 @@ logger.setVerboseLevel(argv.verbose);
 
 
 if(argv._[0] === 'init') {
-    const proj = new Project(argv, WORKING_DIR, SCRIPT_DIR);
-    proj.init();
+    const init = new Init(argv, WORKING_DIR, SCRIPT_DIR);
+    init.execute();
 }
 if(argv._[0] === 'generate') {
-    const gen = new Generate(argv, WORKING_DIR, SCRIPT_DIR);
-    gen.generate();
+    const generate = new Generate(argv, WORKING_DIR, SCRIPT_DIR);
+    generate.generate();
 }
