@@ -1,6 +1,6 @@
 'use strict';
 
 module.exports = {
-    Project: require('./InitProject'),
+    Init: require('./InitProject'),
     Generate: require('./GenerateProject')
 };
