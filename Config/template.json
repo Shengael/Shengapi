@@ -1,0 +1,19 @@
+{
+  "toReplace": [
+    {
+      "selector": "$controller$",
+      "string": "$name$Controller",
+      "UpperCamelCase": true
+    },
+    {
+      "selector": "$model$",
+      "string": "$name$",
+      "UpperCamelCase": true
+    },
+    {
+      "selector": "$route$",
+      "string": "$name$",
+      "UpperCamelCase": true
+    }
+  ]
+}
