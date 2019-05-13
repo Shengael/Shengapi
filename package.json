@@ -18,6 +18,7 @@
     "acorn": "^6.1.1",
     "chalk": "^2.4.2",
     "js-beautify": "^1.9.0",
+    "lodash": "^4.17.11",
     "shelljs": "^0.8.3",
     "yargs": "^13.2.2"
   },
@@ -26,6 +27,7 @@
     "@types/express": "^4.16.1",
     "@types/node": "^11.11.3",
     "@types/shelljs": "^0.8.3",
-    "@types/yargs": "^12.0.9"
+    "@types/yargs": "^12.0.9",
+    "jsdoc": "^3.6.1"
   }
 }
