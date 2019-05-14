@@ -1,12 +1,14 @@
 'use strict';
 
 
-const fs      = require('fs');
-const logger  = require('../utils').Logger;
-const shell   = require('shelljs');
-const Project = require('../models/Project');
-const config  = require('../../Config/default.json');
-const _       = require('lodash');
+const fs              = require('fs');
+const logger          = require('../utils').Logger;
+const shell           = require('shelljs');
+const Project         = require('../models/Project');
+const TemplateBuilder = require('../models/TemplateBuilder');
+const config          = require('../../Config/default.json');
+const templateRules   = require('../../Config/template.json');
+const _               = require('lodash');
 
 /**
  *
@@ -20,8 +22,9 @@ class InitProject {
      * @param SCRIPT_DIR
      */
     constructor(argv, WORKING_DIR, SCRIPT_DIR) {
-        this.command = "init";
-        this.project = new Project(argv, WORKING_DIR, SCRIPT_DIR);
+        this.command         = "init";
+        this.project         = new Project(argv, WORKING_DIR, SCRIPT_DIR);
+        this.templateBuilder = new TemplateBuilder(templateRules, this.project.name);
     }
 
     createDir(current, struct) {
@@ -30,7 +33,7 @@ class InitProject {
             console.log(`create ${newCurrent}`);
             fs.mkdirSync(newCurrent);
             if (dir.files) this.createFiles(newCurrent, dir.files);
-            if ( dir.templates) this.createTemplates(newCurrent, dir.templates);
+            if (dir.templates) this.createTemplates(newCurrent, dir.templates);
             if (dir.directories) this.createDir(newCurrent, dir.directories);
         });
     }
@@ -53,16 +56,15 @@ class InitProject {
     }
 
     createTemplate(current, template) {
-        if (fs.existsSync(`${this.project.templateDir}\\${this.command}\\${template.name}`)) {
-            //fs.writeFileSync(`${this.project.modelsDir}\\index.js`, "'use strict';");
+        const templatePath = `${this.project.templateDir}\\${this.command}\\${template.name}`;
+        if (fs.existsSync(templatePath)) {
             console.log(`create template on ${current}${template.dest}`);
-            fs.writeFileSync(`${current}${template.dest}`, "'use strict';");
+            fs.writeFileSync(`${current}${template.dest}`, this.templateBuilder.apply(templatePath));
         }
     }
 
 
     execute() {
-
         if (!this.project.name.length) {
             logger.ERROR('invalid project name');
             return false;
@@ -124,6 +126,7 @@ class InitProject {
         let struct = config.global.environment.directories;
         if (this.project.auto) {
             if (this.project.auto === 'sequelize') struct = _.merge(struct, config.sequelize.environment.directories);
+            if (this.project.auto === 'mongoose') struct = _.merge(struct, config.mongoose.environment.directories);
         }
 
         this.createDir(`${this.project.dir}\\`, struct);
@@ -149,22 +152,13 @@ class InitProject {
     }
 
     doAutomaticInstalls() {
-        const installs    = ['express', 'morgan', 'dotenv', 'body-parser'];
-        const devInstalls = ['nodemon', '@types/express', '@types/morgan', "@types/dotenv", "@types/body-parser"];
-        const globals     = [];
+        let installs = config.global.installs;
+        if(this.project.auto === 'sequelize') installs = _.merge(installs, config.sequelize.installs);
+        else if(this.project.auto === 'mongoose') installs = _.merge(installs, config.mongoose.installs);
 
-        if (this.project.auto === 'mongoose') {
-            installs.push('mongoose');
-            devInstalls.push('@types/mongoose');
-        } else if (this.project.auto === 'sequelize') {
-            installs.push('mysql2', 'sequelize');
-            devInstalls.push('@types/mysql', '@types/sequelize');
-            globals.push('sequelize-cli');
-        }
-
-        this.install(installs, '');
-        this.install(devInstalls, '--save-dev');
-        this.install(globals, '-g');
+        _.forEach(installs, install => {
+            this.install(install.array, install.options);
+        });
 
         if (!this.editPackageJson('scripts', 'dev', 'nodemon src/index.js')) {
             return false;
@@ -173,27 +167,16 @@ class InitProject {
 
     generateAutomaticFiles() {
 
-        const initTemplatePath = `${this.project.script_dir}\\templates\\init`;
-        let content            = fs.readFileSync(`${initTemplatePath}\\index.js`).toString();
-        fs.writeFileSync(`${this.project.srcDir}\\index.js`, content);
-        content = fs.readFileSync(`${initTemplatePath}\\controller.js`).toString();
-        fs.writeFileSync(`${this.project.controllersDir}\\index.js`, content);
 
         if (this.project.auto === 'sequelize') {
             shell.cd(this.project.srcDir);
-            if (shell.exec(`sequelize init > nul 2>&1`).code !== 0) {
+            if (shell.exec(`sequelize init --force > nul 2>&1`).code !== 0) {
                 logger.ERROR(`sequelize init failed`);
                 shell.exit(1);
             }
-        } else {
-            console.log('auto : ' + this.project.auto);
-            content = fs.readFileSync(`${initTemplatePath}\\models.js`).toString();
-            fs.writeFileSync(`${this.project.modelsDir}\\index.js`, content);
         }
 
         shell.cd(this.project.parentDir);
-        content = fs.readFileSync(`${initTemplatePath}\\route.js`).toString();
-        fs.writeFileSync(`${this.project.routesDir}\\index.js`, content);
     }
 
     env() {

@@ -1,11 +1,11 @@
 'use strict';
 
 
-class $modelName$ {
+class $model$ {
 
     constructor(id) {
         this.id = id;
     }
 }
 
-module.exports = $modelName$;
+module.exports = $model$;

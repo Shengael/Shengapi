@@ -1,9 +1,9 @@
 'use strict';
 
 const models = require('../models');
-const $model$ = models.$model$;
+const TTuser = models.TTuser;
 
-class $controller$ {
+class TTuserController {
 
     constructor() {
 
@@ -22,4 +22,4 @@ class $controller$ {
     }
 }
 
-module.exports = new $controller$();
+module.exports = new TTuserController();

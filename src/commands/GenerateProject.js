@@ -4,6 +4,10 @@ const acorn = require('acorn');
 const beautify = require('js-beautify').js;
 const logger = require('../utils').Logger;
 const shell = require('shelljs');
+const _ = require('lodash');
+const TemplateBuilder = require('../models/TemplateBuilder');
+const templateJSON = require('../../Config/template.json');
+const generateJSON = require('../../Config/generate.json');
 
 class GenerateProject {
 
@@ -18,6 +22,7 @@ class GenerateProject {
         this.routesDir = `${this.srcDir}\\routes`;
         this.template = `${this.script_dir}\\templates\\generate`;
         this.dataSource = false;
+        this.templateBuilder = new TemplateBuilder(templateJSON, this.name);
     }
 
     generate() {
@@ -25,11 +30,14 @@ class GenerateProject {
 
         if(!this.checkProject()) return false;
 
-        let controller = fs.readFileSync(`${this.template}\\controller.js`).toString();
+        if(!this.generateTemplates()) return false;
+       /* let controller = fs.readFileSync(`${this.template}\\controller.js`).toString();
         controller = controller.replace(/\$model\$/g, `${this.name}`);
         controller = controller.replace(/\$controllerName\$/g, `${this.name}Controller`);
         const controllerPath = `${this.controllersDir}\\${this.name}.controller.js`;
-        fs.writeFileSync(controllerPath, controller);
+        fs.writeFileSync(controllerPath, this.templateBuilder.apply(`${this.template}\\controller.js`));
+
+
 
 
         let model = fs.readFileSync(`${this.template}\\model.js`).toString();
@@ -43,12 +51,12 @@ class GenerateProject {
             }
 
             model = model.replace(/\$models\$/g, `${this.name.toString().toLowerCase()}s`);
-        }
+        }*/
 
         if(this.dataSource !== 'sequelize') {
-            model = model.replace(/\$modelName\$/g, `${this.name}`);
+            /*model = model.replace(/\$modelName\$/g, `${this.name}`);
             const modelPath = `${this.modelsDir}\\${this.name}.js`;
-            fs.writeFileSync(modelPath, model);
+            fs.writeFileSync(modelPath, model);*/
         } else {
             const attrs = this.attributes.join(',');
             shell.cd(this.srcDir);
@@ -60,12 +68,12 @@ class GenerateProject {
             shell.cd(this.projectDir);
         }
 
-        let route = fs.readFileSync(`${this.template}\\route.js`).toString();
+        /*let route = fs.readFileSync(`${this.template}\\route.js`).toString();
         route = route.replace(/\$model\$/g, `${this.name.toString().toLowerCase()}s`);
         route = route.replace(/\$controller\$/g, `${this.name}Controller`);
         route = route.replace(/\$name\$/g, `${this.name.toString().toLowerCase()}`);
         const routePath = `${this.routesDir}\\${this.name}.route.js`;
-        fs.writeFileSync(routePath, route);
+        fs.writeFileSync(routePath, route);*/
 
         this.addFilesToImport();
         this.editRouteBuilder();
@@ -73,6 +81,26 @@ class GenerateProject {
 
     checkName() {
         return this.name.length;
+    }
+
+    generateTemplates() {
+        const base = `${this.projectDir}\\${generateJSON.root}\\`;
+        let configJSON;
+        if(this.dataSource === 'mongoose') configJSON = generateJSON.mongoose;
+        else if(this.dataSource === 'sequelize') configJSON = generateJSON.sequelize;
+        else return false;
+
+        _.forEach(configJSON.create, f => {
+            const fullPath = `${base}${f.path}`.replace(/\$name\$/g, this.name);
+            const templatePath = `${this.template}\\${f.template}`;
+
+            if(fs.existsSync(templatePath)){
+                fs.writeFileSync(fullPath, this.templateBuilder.apply(templatePath));
+            }
+        });
+
+        return true;
+
     }
 
     addFilesToImport() {
@@ -83,7 +111,7 @@ class GenerateProject {
     }
 
     static editImport(file, newKey) {
-
+        console.log(file, newKey);
         let jsFile = fs.readFileSync(file).toString();
         let bodyJs = acorn.parse(jsFile).body;
         bodyJs = bodyJs.filter(statement => statement.expression.type === 'AssignmentExpression')

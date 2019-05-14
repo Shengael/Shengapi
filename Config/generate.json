@@ -1,0 +1,36 @@
+{
+    "root": "src",
+    "mongoose": {
+        "create": {
+            "model": {
+                "path": "models\\$name$.js",
+                "template": "model.mongoose.js"
+            },
+            "controller": {
+                "path": "controllers\\$name$.controller.js",
+                "template": "controller.js"
+            },
+            "route": {
+                "path": "routes\\$name$.route.js",
+                "template": "route.js"
+            }
+        },
+        "edit": {
+            "model": {
+                "path": "models/index.js",
+                "import": true
+            },
+            "controller": {
+                "path": "controllers/index.js",
+                "import": true
+            },
+            "route": {
+                "path": "routes/index.js",
+                "import": true
+            }
+        }
+    },
+    "sequelize": {
+
+    }
+}

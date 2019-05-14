@@ -1,7 +1,7 @@
 'use strict';
 
 const models = require('../models');
-const $model$ = models.$model$;
+const User = models.User;
 
 class $controller$ {
 
