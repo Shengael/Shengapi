@@ -5,10 +5,7 @@ const fs = require('fs');
 class TemplateBuilder {
 
     constructor(jsonConfig, projectName) {
-        console.log(projectName)
-        console.log(JSON.stringify(jsonConfig).replace(/\$name\$/g, projectName));
         this.templateRules = JSON.parse(JSON.stringify(jsonConfig).replace(/\$name\$/g, projectName));
-
     }
 
     static getContent(path) {
@@ -24,6 +21,7 @@ class TemplateBuilder {
 
         return template;
     }
+
 }
 
 module.exports = TemplateBuilder;

@@ -8,24 +8,26 @@
             },
             "controller": {
                 "path": "controllers\\$name$.controller.js",
-                "template": "controller.js"
+                "template": "controller.js",
+                "unitTest": true
             },
             "route": {
                 "path": "routes\\$name$.route.js",
-                "template": "route.js"
+                "template": "route.js",
+                "functionalTest": true
             }
         },
         "edit": {
             "model": {
-                "path": "models/index.js",
+                "path": "models\\index.js",
                 "import": true
             },
             "controller": {
-                "path": "controllers/index.js",
+                "path": "controllers\\index.js",
                 "import": true
             },
             "route": {
-                "path": "routes/index.js",
+                "path": "routes\\index.js",
                 "import": true
             }
         }

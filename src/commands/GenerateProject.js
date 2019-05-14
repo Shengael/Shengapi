@@ -16,6 +16,7 @@ class GenerateProject {
         this.attributes = argv.attributes;
         this.script_dir = SCRIPT_DIR;
         this.projectDir = WORKING_DIR;
+        this.base = `${this.projectDir}\\${generateJSON.root}\\`;
         this.srcDir = `${this.projectDir}\\src`;
         this.modelsDir = `${this.srcDir}\\models`;
         this.controllersDir = `${this.srcDir}\\controllers`;
@@ -26,38 +27,17 @@ class GenerateProject {
     }
 
     generate() {
+
+        this.addFilesToImport();
+
+        return ;
         if (!this.checkName()) return false;
 
         if(!this.checkProject()) return false;
 
         if(!this.generateTemplates()) return false;
-       /* let controller = fs.readFileSync(`${this.template}\\controller.js`).toString();
-        controller = controller.replace(/\$model\$/g, `${this.name}`);
-        controller = controller.replace(/\$controllerName\$/g, `${this.name}Controller`);
-        const controllerPath = `${this.controllersDir}\\${this.name}.controller.js`;
-        fs.writeFileSync(controllerPath, this.templateBuilder.apply(`${this.template}\\controller.js`));
 
-
-
-
-        let model = fs.readFileSync(`${this.template}\\model.js`).toString();
-
-
-        if(this.dataSource === 'mongoose'){
-            model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
-
-            if(this.attributes) {
-                model = this.insertAttributes(model);
-            }
-
-            model = model.replace(/\$models\$/g, `${this.name.toString().toLowerCase()}s`);
-        }*/
-
-        if(this.dataSource !== 'sequelize') {
-            /*model = model.replace(/\$modelName\$/g, `${this.name}`);
-            const modelPath = `${this.modelsDir}\\${this.name}.js`;
-            fs.writeFileSync(modelPath, model);*/
-        } else {
+        if(this.dataSource === 'sequelize') {
             const attrs = this.attributes.join(',');
             shell.cd(this.srcDir);
             if (shell.exec(`sequelize model:create --name ${this.name} --attributes ${attrs}> nul 2>&1`).code !== 0) {
@@ -68,13 +48,6 @@ class GenerateProject {
             shell.cd(this.projectDir);
         }
 
-        /*let route = fs.readFileSync(`${this.template}\\route.js`).toString();
-        route = route.replace(/\$model\$/g, `${this.name.toString().toLowerCase()}s`);
-        route = route.replace(/\$controller\$/g, `${this.name}Controller`);
-        route = route.replace(/\$name\$/g, `${this.name.toString().toLowerCase()}`);
-        const routePath = `${this.routesDir}\\${this.name}.route.js`;
-        fs.writeFileSync(routePath, route);*/
-
         this.addFilesToImport();
         this.editRouteBuilder();
     }
@@ -84,14 +57,13 @@ class GenerateProject {
     }
 
     generateTemplates() {
-        const base = `${this.projectDir}\\${generateJSON.root}\\`;
         let configJSON;
         if(this.dataSource === 'mongoose') configJSON = generateJSON.mongoose;
         else if(this.dataSource === 'sequelize') configJSON = generateJSON.sequelize;
         else return false;
 
         _.forEach(configJSON.create, f => {
-            const fullPath = `${base}${f.path}`.replace(/\$name\$/g, this.name);
+            const fullPath = `${this.base}${f.path}`.replace(/\$name\$/g, this.name);
             const templatePath = `${this.template}\\${f.template}`;
 
             if(fs.existsSync(templatePath)){
@@ -104,10 +76,14 @@ class GenerateProject {
     }
 
     addFilesToImport() {
-        if(this.dataSource !== 'sequelize'){
+        /*if(this.dataSource !== 'sequelize'){
             GenerateProject.editImport(`${this.modelsDir}\\index.js`, `${this.name}: require('./${this.name}')`);
         }
-        GenerateProject.editImport(`${this.controllersDir}\\index.js`, `${this.name}Controller: require('./${this.name}.controller')`);
+        GenerateProject.editImport(`${this.controllersDir}\\index.js`, `${this.name}Controller: require('./${this.name}.controller')`);*/
+
+        _.forEach(generateJSON.mongoose.edit, edit => {
+            console.log(`edit ${this.base}${edit.path}`);
+        });
     }
 
     static editImport(file, newKey) {
