@@ -23,7 +23,7 @@ class InitProject {
      */
     constructor(argv, WORKING_DIR, SCRIPT_DIR) {
         this.project          = new Project(argv, WORKING_DIR, SCRIPT_DIR);
-        this.tree             = new Tree(this.project.name, `${this.project.templateDir}\\init`);
+        this.tree             = new Tree(this.project.name, `${this.project.templateDir}\\init`, this.project.srcDir);
         this.packageInstaller = new PackageInstaller(this.project);
     }
 

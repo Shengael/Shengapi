@@ -11,21 +11,12 @@ class ImportManager {
         this.root = root;
     }
 
-    addFilesToImport(editJSON) { //generateJSON.sequelize.edit
-        /*if(this.dataSource !== 'sequelize'){
-            ImportManager.editImport(`${this.modelsDir}\\index.js`, `${this.name}: require('./${this.name}')`);
-        }
-        ImportManager.editImport(`${this.controllersDir}\\index.js`, `${this.name}Controller: require('./${this.name}.controller')`);*/
-        /*let edits;
-        if(this.dataSource === 'sequelize') edits = generateJSON.sequelize.edit;
-        else if(this.dataSource === 'mongoose') edits = generateJSON.mongoose.edit;
-        else return false;*/
+    addFilesToImport(editJSON) {
+
         _.forEach(editJSON, edit => {
             if(edit.import === true) {
-                // if(edit.router === true) console.log(`edit router ${this.root}${edit.path}`);
                 if(edit.router === true) this.editRouteBuilder(`${this.root}\\${edit.path}`, edit.key);
                 else ImportManager.editImport(`${this.root}\\${edit.path}`, edit.key);
-                /*else  console.log(`edit ${this.root}${edit.path}`)*/
             }
 
         });
@@ -80,7 +71,6 @@ class ImportManager {
             }
 
             let lasString = ImportManager.editString(jsFile, key, position);
-            // let lasString = ImportManager.editString(jsFile, `app.use('/${this.name.toString().toLowerCase()}', require('./${this.name}.route'));`, position);
             lasString = beautify(lasString, { indent_size: 4, space_in_empty_paren: true });
             fs.writeFileSync(filePath, lasString);
         }

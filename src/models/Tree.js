@@ -7,9 +7,9 @@ const templateJSON    = require('../../Config/template.json');
 
 class Tree {
 
-    constructor(name, templateDir, projectDir) {
+    constructor(name, templateDir, projectDir, srcDir, attributes) {
         this.templateDir     = templateDir;
-        this.templateBuilder = new TemplateBuilder(templateJSON, name);
+        this.templateBuilder = new TemplateBuilder(templateJSON, name, projectDir, srcDir, attributes);
         this.projectDir = projectDir;
     }
 

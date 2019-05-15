@@ -30,8 +30,8 @@ class GenerateProject {
         this.template        = `${this.script_dir}\\templates\\generate`;
         this.dataSource      = false;
         this.configJSON = JSON.parse(JSON.stringify(generateJSON).replace(/\$name\$/g, this.name));
-        this.templateBuilder = new TemplateBuilder(templateJSON, this.name);
-        this.tree            = new Tree(this.name, `${this.template}\\`, this.projectDir);
+        this.templateBuilder = new TemplateBuilder(templateJSON, this.name, this.projectDir, this.srcDir);
+        this.tree            = new Tree(this.name, `${this.template}\\`, this.projectDir, this.srcDir);
         this.importManager = new ImportManager(this.projectDir);
     }
 
@@ -75,32 +75,6 @@ class GenerateProject {
         return true;
 
     }
-
-
-    /*insertAttributes(JSString) {
-        // const model = fs.readFileSync(`${this.template}\\model.mongoose.js`).toString();
-        let bodyJs = acorn.parse(JSString).body;
-
-        const attributesArray = this.attributes.map(ele => {
-            return `${ele.split(':')[0].toLowerCase().trim()}: ${ele.split(':')[1].trim().charAt(0).toUpperCase()}${ele.split(':')[1].trim().slice(1).toLowerCase()}`;
-        });
-
-        const attributesString = attributesArray.join(',');
-
-        bodyJs = bodyJs.filter(statement => statement.type === 'VariableDeclaration')
-            .filter(statement => statement.declarations[0].type === 'VariableDeclarator')
-            .filter(statement => statement.declarations[0].id.name === "$modelName$Schema")
-            .filter(statement => statement.declarations[0].init.type === 'NewExpression')
-            .find(statement =>  statement.declarations[0].init.callee.name === 'Schema');
-
-        const position = bodyJs.declarations[0].init.arguments[0].start + 1;
-
-        let res = GenerateProject.editString(JSString, attributesString, position);
-        res = beautify(res, { indent_size: 4, space_in_empty_paren: true });
-
-        return res;
-
-    }*/
 
 
     checkProject() {
