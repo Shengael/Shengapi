@@ -2,17 +2,14 @@
 
 //PACKAGE NPM
 const fs              = require('fs');
-const acorn           = require('acorn');
-const beautify        = require('js-beautify').js;
 const shell           = require('shelljs');
 const _               = require('lodash');
 const logger          = require('../utils').Logger;
 //IMPORT CLASS
-const TemplateBuilder = require('../models/TemplateBuilder');
 const Tree            = require('../models/Tree');
 const ImportManager   = require('../models/ImportManager');
+const ColumnDatabase = require('../models/ColumnDatabase');
 // JSON CONFIGURATION
-const templateJSON    = require('../../Config/template.json');
 const generateJSON    = require('../../Config/generate.json');
 
 class GenerateProject {
@@ -22,7 +19,6 @@ class GenerateProject {
         this.attributes      = argv.attributes;
         this.script_dir      = SCRIPT_DIR;
         this.projectDir      = WORKING_DIR;
-        this.base            = `${this.projectDir}\\${generateJSON.root}\\`;
         this.srcDir          = `${this.projectDir}\\src`;
         this.modelsDir       = `${this.srcDir}\\models`;
         this.controllersDir  = `${this.srcDir}\\controllers`;
@@ -30,20 +26,19 @@ class GenerateProject {
         this.template        = `${this.script_dir}\\templates\\generate`;
         this.dataSource      = false;
         this.configJSON = JSON.parse(JSON.stringify(generateJSON).replace(/\$name\$/g, this.name));
-        this.templateBuilder = new TemplateBuilder(templateJSON, this.name, this.projectDir, this.srcDir);
-        this.tree            = new Tree(this.name, `${this.template}\\`, this.projectDir, this.srcDir);
+        this.tree            = new Tree(this.name, `${this.template}\\`, this.projectDir, this.srcDir, this.attributes);
         this.importManager = new ImportManager(this.projectDir);
     }
 
     generate() {
-
-        this.editImports();
 
         if (!this.checkName()) return false;
 
         if (!this.checkProject()) return false;
 
         if (!this.generateTemplates()) return false;
+
+        this.editImports();
 
         if (this.dataSource === 'sequelize') {
             const attrs = this.attributes.join(',');
@@ -68,9 +63,7 @@ class GenerateProject {
         else if (this.dataSource === 'sequelize') configJSON = _.merge(configJSON, this.configJSON.sequelize.create);
         else return false;
 
-        console.log(configJSON);
-
-        this.tree.createDir(`${this.srcDir}\\`, this.configJSON);
+        this.tree.createDir(`${this.srcDir}\\`, configJSON);
 
         return true;
 

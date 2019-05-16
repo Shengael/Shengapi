@@ -2,14 +2,12 @@
 
 const _ = require('lodash');
 const fs = require('fs');
-const ColumnDatabase = require('./ColumnDatabase');
 
 
 class TemplateBuilder {
 
-    constructor(jsonConfig, projectName, projectDir, srcDir, attributes) {
+    constructor(jsonConfig, projectName) {
         this.templateRules = JSON.parse(JSON.stringify(jsonConfig).replace(/\$name\$/g, projectName));
-        if(attributes) this.columnDatabase = new ColumnDatabase(projectName, projectDir, srcDir, attributes);
     }
 
     static getContent(path) {

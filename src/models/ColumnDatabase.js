@@ -16,39 +16,38 @@ class ColumnDatabase {
         this.srcDir = srcDir;
     }
 
-    insertAttributes(mode, attributes, filePath) {
+    insertAttributes(mode, attributes, stringJS) {
 
         if(mode === 'sequelize') this.sequelizeInsert(attributes);
-        else if(mode === 'mongoose') this.mongooseInsert(attributes, filePath);
+        else if(mode === 'mongoose') return this.mongooseInsert(attributes, stringJS);
         else return false;
 
         return true;
 
     }
 
-    mongooseInsert(attributes, filePath) {
-        const fileJS = fs.readFileSync(filePath).toString();
-        let bodyJs   = acorn.parse(fileJS).body;
+    mongooseInsert(attributes, stringJS) {
+        //const fileJS = fs.readFileSync(filePath).toString();
+        let bodyJs   = acorn.parse(stringJS).body;
 
         const attributesArray = attributes.map(ele => {
-            return `${ele.split(':')[0].toLowerCase().trim()}: ${ele.split(':')[1].trim().charAt(0).toUpperCase()}${ele.split(':')[1].trim().slice(1).toLowerCase()}`;
+            return `${ele.split(':')[0].toLowerCase().trim()}: {type:${ele.split(':')[1].trim().charAt(0).toUpperCase()}${ele.split(':')[1].trim().slice(1).toLowerCase()}}`;
         });
 
         const attributesString = attributesArray.join(',');
 
         bodyJs = bodyJs.filter(statement => statement.type === 'VariableDeclaration')
             .filter(statement => statement.declarations[0].type === 'VariableDeclarator')
-            .filter(statement => statement.declarations[0].id.name === "$modelName$Schema")
+            .filter(statement => statement.declarations[0].id.name === "$Model$Schema")
             .filter(statement => statement.declarations[0].init.type === 'NewExpression')
             .find(statement => statement.declarations[0].init.callee.name === 'Schema');
 
         const position = bodyJs.declarations[0].init.arguments[0].start + 1;
 
-        let res = ImportManager.editString(fileJS, attributesString, position);
+        let res = ImportManager.editString(stringJS, attributesString, position);
         res     = beautify(res, {indent_size: 4, space_in_empty_paren: true});
 
-        fs.writeFileSync(filePath, res);
-        return true;
+        return res;
     }
 
     sequelizeInsert(attributes) {

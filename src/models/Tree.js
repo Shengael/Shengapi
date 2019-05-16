@@ -1,8 +1,12 @@
 'use strict';
 
+// PACKAGE NPM
 const _               = require('lodash');
 const fs              = require('fs');
+// IMPORT CLASS
 const TemplateBuilder = require('./TemplateBuilder');
+const ColumnDatabase = require('./ColumnDatabase');
+// JSON CONFIGURATION
 const templateJSON    = require('../../Config/template.json');
 
 class Tree {
@@ -11,6 +15,8 @@ class Tree {
         this.templateDir     = templateDir;
         this.templateBuilder = new TemplateBuilder(templateJSON, name, projectDir, srcDir, attributes);
         this.projectDir = projectDir;
+        this.attributes = attributes;
+        if(attributes) this.columnDatabase = new ColumnDatabase(name, projectDir, srcDir);
     }
 
     /**
@@ -60,7 +66,11 @@ class Tree {
     createTemplate(current, template) {
         const templatePath = `${this.templateDir}\\${template.name}`;
         if (fs.existsSync(templatePath)) {
-            fs.writeFileSync(`${current}${template.dest}`, this.templateBuilder.apply(templatePath));
+            let newString = fs.readFileSync(templatePath).toString();
+            if(template.mongooseModel) newString = this.columnDatabase.insertAttributes('mongoose', this.attributes, newString);
+            fs.writeFileSync(`${current}${template.dest}`, newString);
+            newString = this.templateBuilder.apply(`${current}${template.dest}`);
+            fs.writeFileSync(`${current}${template.dest}`, newString);
         }
     }
 }

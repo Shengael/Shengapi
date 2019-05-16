@@ -12,7 +12,6 @@ class ImportManager {
     }
 
     addFilesToImport(editJSON) {
-
         _.forEach(editJSON, edit => {
             if(edit.import === true) {
                 if(edit.router === true) this.editRouteBuilder(`${this.root}\\${edit.path}`, edit.key);
