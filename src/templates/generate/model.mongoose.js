@@ -1,15 +1,22 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const $modelName$Schema = new Schema(
+const $Model$Schema = new Schema(
     {
     },
     {
         autoCreate: true,
-        collection: '$models$'
+        collection: '$Model$'
     }
 );
 
-const $modelName$ = mongoose.model('$modelName$', $modelName$Schema);
+class $Model$Class {
 
-module.exports = $modelName$;
+    constructor() {
+    }
+}
+
+$Model$Schema.loadClass($Model$Class);
+const $Model$ = mongoose.model('$Model$', $Model$Schema);
+
+module.exports = $Model$;

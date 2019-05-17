@@ -7,7 +7,12 @@
                 "src": {
                     "name": "src",
                     "files": [],
-                    "templates": [],
+                    "templates": [
+                        {
+                            "name": "index.js",
+                            "dest": "index.js"
+                        }
+                    ],
                     "directories": {
                         "controllers": {
                             "name": "controllers",
@@ -42,35 +47,87 @@
             "git": "git init"
         },
         "installs": {
-            "standard": [
-                "morgan",
-                "dotenv",
-                "express",
-                "body-parser"
-            ],
-            "devs": [
-                "nodemon",
-                "@types/express",
-                "@types/morgan",
-                "@types/dotenv",
-                "@types/body-parser"
-            ],
-            "global": []
+            "standard": {
+                "options": "",
+                "array": [
+                    "morgan",
+                    "dotenv",
+                    "express",
+                    "body-parser"
+                ]
+            },
+            "devs": {
+                "options": "--save-dev",
+                "array": [
+                    "nodemon",
+                    "@types/express",
+                    "@types/morgan",
+                    "@types/dotenv",
+                    "@types/body-parser"
+                ]
+            },
+            "global": {
+                "options": "-g",
+                "array": []
+            }
         }
     },
     "sequelize": {
         "installs": {
-            "standard": [
-                "mysql2",
-                "sequelize"
-            ],
-            "devs": [
-                "@types/mysql",
-                "@types/sequelize"
-            ],
-            "global": [
-                "sequelize-cli"
-            ]
+            "standard": {
+                "options": "",
+                "array": [
+                    "mysql2",
+                    "sequelize"
+                ]
+            },
+            "devs": {
+                "options": "--save-dev",
+                "array": [
+                    "@types/mysql",
+                    "@types/sequelize"
+                ]
+            },
+            "global": {
+                "options": "-g",
+                "array": [
+                    "sequelize-cli"
+                ]
+            }
+        },
+        "environment": {
+            "directories": {
+                "src": {
+                    "name": "src",
+                    "directories": {
+                        "models": {
+                            "name": "models",
+                            "files": [],
+                            "templates": []
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "mongoose": {
+        "installs": {
+            "standard": {
+                "options": "",
+                "array": [
+                    "mongoose"
+                ]
+            },
+            "devs": {
+                "options": "--save-dev",
+                "array": [
+                    "@types/mongoose"
+                ]
+            },
+            "global": {
+                "options": "-g",
+                "array": []
+            }
         },
         "environment": {
             "directories": {
@@ -90,17 +147,6 @@
                     }
                 }
             }
-        }
-    },
-    "mongoose": {
-        "installs": {
-            "standard": [
-                "mongoose"
-            ],
-            "devs": [
-                "@types/mongoose"
-            ],
-            "global": []
         }
     }
 }

@@ -1,0 +1,22 @@
+{
+    "$controller$": {
+        "string": "$name$Controller",
+        "UpperCamelCase": true
+    },
+    "$model$": {
+        "string": "$name$",
+        "LowerCamelCase": true
+    },
+    "$Model$": {
+        "string": "$name$",
+        "UpperCamelCase": true
+    },
+    "$models$": {
+        "string": "$name$s",
+        "LowerCamelCase": true
+    },
+    "$route$": {
+        "string": "$name$",
+        "UpperCamelCase": true
+    }
+}
