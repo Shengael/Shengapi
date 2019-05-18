@@ -1,0 +1,82 @@
+{
+    "root": "src",
+    "global": {
+        "create": {
+            "controller": {
+                "root": "src\\controllers\\",
+                "directories": {
+                    "controller": {
+                        "name": "$name$Controller",
+                        "UpperCamelCase": true,
+                        "templates": [
+                            {
+                                "name": "controller.js",
+                                "dest": "$name$.controller.js"
+                            },
+                            {
+                                "name": "unitTesting.js",
+                                "dest": "$name$.controller.spec.js"
+                            }
+                        ]
+                    }
+                }
+            },
+            "route": {
+                "root": "src\\routes\\",
+                "directories": {
+                    "controller": {
+                        "name": "$name$Route",
+                        "UpperCamelCase": true,
+                        "templates": [
+                            {
+                                "name": "route.js",
+                                "dest": "$name$.route.js"
+                            },
+                            {
+                                "name": "functionalTesting.js",
+                                "dest": "$name$.route.spec.js"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "mongoose": {
+        "create": {
+            "model": {
+                "root": "src\\models\\",
+                "UpperCamelCase": true,
+                "templates": [
+                    {
+                        "name": "model.mongoose.js",
+                        "dest": "$name$.js",
+                        "mongooseModel": true
+                    }
+                ]
+            }
+        },
+        "edit": {
+            "model": {
+                "path": "src\\models\\index.js",
+                "key": "$name$: require('./$name$')",
+                "import": true
+            },
+            "controller": {
+                "path": "src\\controllers\\index.js",
+                "key": "$name$Controller: require('./$name$Controller/$name$.controller')",
+                "import": true
+            },
+            "route": {
+                "path": "src\\routes\\index.js",
+                "key": "app.use('/$name$', require('./$name$Route/$name$.route'));",
+                "import": true,
+                "router": true
+            }
+        }
+    },
+    "sequelize": {
+        "create": "",
+        "edit": ""
+    }
+}
