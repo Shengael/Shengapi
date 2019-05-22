@@ -9,7 +9,7 @@ class $controller$ {
 
     }
 
-    async create(email,password) {
+    async create($attributesList$) {
         let new$Model$ = new $Model$({
             $attributesJSON$
         });
@@ -17,7 +17,7 @@ class $controller$ {
     }
 
     async getAll() {
-        let $model$s = await $Model$.find({},'email name firstname phone_number address postal city is_deleted rank language');
+        let $model$s = await $Model$.find();
         return $model$s;
     }
 
