@@ -18,5 +18,11 @@
     "$route$": {
         "string": "$name$",
         "UpperCamelCase": true
+    },
+    "$attributesList$": {
+        "string": "$attrsList$"
+    },
+    "$attributesJSON$": {
+        "string": "$attrsJSON$"
     }
 }
