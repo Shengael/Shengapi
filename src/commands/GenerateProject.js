@@ -8,9 +8,10 @@ const logger          = require('../utils').Logger;
 //IMPORT CLASS
 const Tree            = require('../models/Tree');
 const ImportManager   = require('../models/ImportManager');
-const ColumnDatabase = require('../models/ColumnDatabase');
+const TemplateBuilder = require('../models/TemplateBuilder');
 // JSON CONFIGURATION
 const generateJSON    = require('../../Config/generate.json');
+const templateJSON    = require('../../Config/template.json');
 
 class GenerateProject {
 
@@ -26,6 +27,7 @@ class GenerateProject {
         this.template        = `${this.script_dir}\\templates\\generate`;
         this.dataSource      = false;
         this.configJSON = JSON.parse(JSON.stringify(generateJSON).replace(/\$name\$/g, this.name));
+        console.log(this.attributes);
         this.tree            = new Tree(this.name, `${this.template}\\`, this.projectDir, this.srcDir, this.attributes);
         this.importManager = new ImportManager(this.projectDir);
     }

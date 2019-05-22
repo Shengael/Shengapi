@@ -12,8 +12,9 @@ const templateJSON    = require('../../Config/template.json');
 class Tree {
 
     constructor(name, templateDir, projectDir, srcDir, attributes) {
+        console.log(attributes);
         this.templateDir     = templateDir;
-        this.templateBuilder = new TemplateBuilder(templateJSON, name, projectDir, srcDir, attributes);
+        this.templateBuilder = new TemplateBuilder(templateJSON, name, attributes);
         this.projectDir = projectDir;
         this.attributes = attributes;
         if(attributes) this.columnDatabase = new ColumnDatabase(name, projectDir, srcDir);
@@ -67,7 +68,7 @@ class Tree {
         const templatePath = `${this.templateDir}\\${template.name}`;
         if (fs.existsSync(templatePath)) {
             let newString = fs.readFileSync(templatePath).toString();
-            if(template.mongooseModel) newString = this.columnDatabase.insertAttributes('mongoose', this.attributes, newString);
+            if(this.attributes && template.mongooseModel) newString = this.columnDatabase.insertAttributes('mongoose', this.attributes, newString);
             fs.writeFileSync(`${current}${template.dest}`, newString);
             newString = this.templateBuilder.apply(`${current}${template.dest}`);
             fs.writeFileSync(`${current}${template.dest}`, newString);
