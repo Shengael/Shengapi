@@ -53,7 +53,13 @@
                     "morgan",
                     "dotenv",
                     "express",
-                    "body-parser"
+                    "body-parser",
+                    "bcrypt-nodejs",
+                    "jsonwebtoken",
+                    "passport",
+                    "passport-jwt",
+                    "rollbar"
+
                 ]
             },
             "devs": {
@@ -63,7 +69,11 @@
                     "@types/express",
                     "@types/morgan",
                     "@types/dotenv",
-                    "@types/body-parser"
+                    "@types/body-parser",
+                    "@types/chai",
+                    "chai",
+                    "mocha",
+                    "nyc"
                 ]
             },
             "global": {
@@ -115,7 +125,8 @@
             "standard": {
                 "options": "",
                 "array": [
-                    "mongoose"
+                    "mongoose",
+                    "mongoose-bcrypt"
                 ]
             },
             "devs": {
