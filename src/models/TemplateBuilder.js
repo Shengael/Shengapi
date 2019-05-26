@@ -20,7 +20,7 @@ class TemplateBuilder {
 
         this.templateRules = JSON.parse(JSON.stringify(this.templateRules).replace(/\$attrsList\$/g, attrsList));
         this.templateRules = JSON.parse(JSON.stringify(this.templateRules).replace(/\$attrsJSON\$/g, attrsJSON));
-        this.templateRules = JSON.parse(JSON.stringify(this.templateRules).replace(/\$attributesReq\$/g, attrsJSON));
+        this.templateRules = JSON.parse(JSON.stringify(this.templateRules).replace(/\$attrsREQ\$/g, attrsReq));
     }
 
     static getContent(path) {

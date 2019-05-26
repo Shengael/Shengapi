@@ -24,5 +24,8 @@
     },
     "$attributesJSON$": {
         "string": "$attrsJSON$"
+    },
+    "$attributesReq$": {
+        "string": "$attrsREQ$"
     }
 }

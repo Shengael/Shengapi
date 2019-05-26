@@ -3,9 +3,9 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 const router = express.Router();
-const $controller$ = require("../controllers").$controller$;
-const UserController = require("../controllers").UserController;
-const AuthController = require('../controllers').AuthController;
+const $controller$ = require("../../controllers").$controller$;
+const UserController = require("../../controllers").UserController;
+const AuthController = require('../../controllers').AuthController;
 
 router.use(bodyParser.json());
 router.use(AuthController.authenticate());
