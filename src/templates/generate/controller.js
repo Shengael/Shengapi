@@ -1,25 +1,32 @@
 'use strict';
 
 const models = require('../models');
-const $model$ = models.$model$;
+const Controller = require('../Controller');
+const $Model$ = models.$Model$;
 
-class $controllerName$ {
+class $controller$ extends Controller{
 
     constructor() {
-
+        super($Model$);
     }
 
-    async create(name) {
-        //TODO
+    async create($attributesList$) {
+        let new$Model$ = new $Model$({
+            $attributesJSON$
+        });
+        await new$Model$.save();
     }
 
-    async getAll() {
-        //TODO
+    async update(id, fields) {
+        let $model$ = await this.getById(id);
+        return await super.update($model$, fields);
     }
 
-    async getById(id) {
-        //TODO
+    async delete(id) {
+        let $model$ = await this.getById(id);
+        return await super.delete($model$);
     }
+
 }
 
-module.exports = new $controllerName$();
+module.exports = new $controller$();
