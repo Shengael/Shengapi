@@ -1,12 +1,13 @@
 'use strict';
 
 const models = require('../models');
+const Controller = require('../Controller');
 const $Model$ = models.$Model$;
 
-class $controller$ {
+class $controller$ extends Controller{
 
     constructor() {
-
+        super($Model$);
     }
 
     async create($attributesList$) {
@@ -16,44 +17,14 @@ class $controller$ {
         await new$Model$.save();
     }
 
-    async getAll() {
-        let $model$s = await $Model$.find();
-        return $model$s;
-    }
-
-    async getById(id) {
-        return await $Model$.findOne({id});
-
-    }
-
-    async update(id, $attributesList$) {
-
+    async update(id, fields) {
         let $model$ = await this.getById(id);
-        if($model$ === undefined){
-            return undefined;
-        }
-        // password = password === undefined ? user.password : password;
-
-        $model$ = await $Model$.findOneAndUpdate(
-            {
-                id: id
-            },{
-                $set:{
-                    $attributesJSON$
-                }
-            },{
-                new : false
-            });
-        return $model$;
+        return await super.update($model$, fields);
     }
 
     async delete(id) {
         let $model$ = await this.getById(id);
-        if($model$ === undefined){
-            return undefined;
-        }
-
-        await $model$.remove({id});
+        return await super.delete($model$);
     }
 
 }
